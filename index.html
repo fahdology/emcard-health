@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>emcard.health — البطاقة الطبية الطارئة</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Noto+Kufi+Arabic:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --red: #dc2626; --red-dark: #991b1b; --red-light: #fee2e2;
+    --ink: #0f0f0f; --ink-muted: #4b4b4b; --cream: #faf8f5;
+    --white: #ffffff; --border: #e5e0d8; --green: #16a34a;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'IBM Plex Sans Arabic', sans-serif; background: var(--cream); color: var(--ink); overflow-x: hidden; }
+  .hero { min-height: 100vh; display: grid; grid-template-rows: auto 1fr auto; background: var(--ink); position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, #7f1d1d22 0%, transparent 70%); pointer-events: none; }
+  .hero::after { content: ''; position: absolute; top: -40px; left: -40px; width: 180px; height: 180px; background: var(--red); clip-path: polygon(40% 0%, 60% 0%, 60% 40%, 100% 40%, 100% 60%, 60% 60%, 60% 100%, 40% 100%, 40% 60%, 0% 60%, 0% 40%, 40% 40%); opacity: 0.08; transform: rotate(15deg); }
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; position: relative; z-index: 10; }
+  .logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+  .logo-cross { width: 36px; height: 36px; background: var(--red); clip-path: polygon(40% 0%, 60% 0%, 60% 40%, 100% 40%, 100% 60%, 60% 60%, 60% 100%, 40% 100%, 40% 60%, 0% 60%, 0% 40%, 40% 40%); flex-shrink: 0; }
+  .logo-text { font-family: 'Noto Kufi Arabic', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--white); }
+  .logo-domain { font-size: 0.7rem; color: #666; font-family: monospace; direction: ltr; }
+  .nav-badge { background: var(--red); color: white; font-size: 0.72rem; font-weight: 600; padding: 0.35rem 0.9rem; border-radius: 999px; }
+  .hero-content { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 3rem 1.5rem; position: relative; z-index: 5; }
+  .hero-tag { display: inline-flex; align-items: center; gap: 0.5rem; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 999px; padding: 0.4rem 1rem; font-size: 0.78rem; color: #888; margin-bottom: 2rem; animation: fadeUp 0.6s ease both; }
+  .hero-tag span { color: var(--red); font-weight: 600; }
+  .hero-title { font-family: 'Noto Kufi Arabic', sans-serif; font-size: clamp(2.2rem, 6vw, 4.5rem); font-weight: 900; color: var(--white); line-height: 1.15; margin-bottom: 1.5rem; animation: fadeUp 0.7s 0.1s ease both; }
+  .hero-title em { font-style: normal; color: var(--red); }
+  .hero-sub { font-size: clamp(0.95rem, 2vw, 1.15rem); color: #999; max-width: 520px; line-height: 1.8; margin-bottom: 2.5rem; animation: fadeUp 0.7s 0.2s ease both; }
+  .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; animation: fadeUp 0.7s 0.3s ease both; }
+  .btn-primary { background: var(--red); color: white; border: none; padding: 0.9rem 2rem; border-radius: 12px; font-family: inherit; font-size: 1rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: background 0.2s, transform 0.15s; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .btn-primary:hover { background: var(--red-dark); transform: translateY(-2px); }
+  .btn-secondary { background: transparent; color: #aaa; border: 1px solid #333; padding: 0.9rem 2rem; border-radius: 12px; font-family: inherit; font-size: 1rem; font-weight: 500; cursor: pointer; text-decoration: none; transition: border-color 0.2s, color 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .btn-secondary:hover { border-color: #666; color: white; }
+  .hero-stats { display: flex; gap: 2.5rem; padding: 1.5rem 2rem; border-top: 1px solid #1a1a1a; justify-content: center; flex-wrap: wrap; animation: fadeUp 0.7s 0.4s ease both; }
+  .stat { text-align: center; }
+  .stat-num { font-family: 'Noto Kufi Arabic', sans-serif; font-size: 1.5rem; font-weight: 900; color: var(--red); }
+  .stat-label { font-size: 0.75rem; color: #666; margin-top: 0.2rem; }
+  .preview-section { padding: 5rem 1.5rem; background: var(--white); display: flex; flex-direction: column; align-items: center; gap: 3rem; }
+  .section-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; color: var(--red); text-transform: uppercase; margin-bottom: 0.5rem; text-align: center; }
+  .section-title { font-family: 'Noto Kufi Arabic', sans-serif; font-size: clamp(1.5rem, 4vw, 2.5rem); font-weight: 900; text-align: center; line-height: 1.3; color: var(--ink); }
+  .emc-card { width: 100%; max-width: 400px; background: white; border-radius: 20px; border: 1.5px solid var(--border); overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.1), 0 4px 16px rgba(220,38,38,0.08); transform: rotate(-1deg); transition: transform 0.3s ease; }
+  .emc-card:hover { transform: rotate(0deg) scale(1.02); }
+  .card-header { background: var(--red); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; }
+  .card-header-title { font-family: 'Noto Kufi Arabic', sans-serif; font-weight: 900; font-size: 0.95rem; color: white; }
+  .card-header-sub { font-size: 0.65rem; color: rgba(255,255,255,0.7); margin-top: 0.1rem; }
+  .card-cross { width: 28px; height: 28px; background: white; clip-path: polygon(40% 0%, 60% 0%, 60% 40%, 100% 40%, 100% 60%, 60% 60%, 60% 100%, 40% 100%, 40% 60%, 0% 60%, 0% 40%, 40% 40%); opacity: 0.9; }
+  .card-body { padding: 1.25rem; }
+  .card-patient { display: flex; align-items: center; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+  .card-avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--red-light); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+  .card-name { font-family: 'Noto Kufi Arabic', sans-serif; font-weight: 700; font-size: 1rem; color: var(--ink); }
+  .card-meta { font-size: 0.75rem; color: var(--ink-muted); margin-top: 0.2rem; }
+  .card-fields { display: flex; flex-direction: column; gap: 0.6rem; }
+  .card-field { display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.8rem; }
+  .field-icon { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; flex-shrink: 0; margin-top: 0.1rem; }
+  .field-icon.red { background: var(--red-light); color: var(--red); }
+  .field-icon.green { background: #dcfce7; color: var(--green); }
+  .field-icon.blue { background: #dbeafe; color: #1d4ed8; }
+  .field-icon.orange { background: #ffedd5; color: #ea580c; }
+  .field-label { font-size: 0.65rem; color: var(--ink-muted); }
+  .field-value { font-weight: 600; color: var(--ink); font-size: 0.82rem; }
+  .card-qr-strip { background: #f9f9f9; border-top: 1px solid var(--border); padding: 0.75rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .qr-placeholder { width: 52px; height: 52px; background: var(--ink); border-radius: 6px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; padding: 5px; flex-shrink: 0; }
+  .qr-dot { background: white; border-radius: 1px; }
+  .qr-dot.dark { background: var(--ink); }
+  .qr-text { font-size: 0.68rem; color: var(--ink-muted); line-height: 1.5; }
+  .qr-text strong { display: block; color: var(--ink); font-size: 0.72rem; font-family: monospace; direction: ltr; }
+  .how-section { padding: 5rem 1.5rem; background: var(--cream); max-width: 900px; margin: 0 auto; }
+  .steps { display: flex; flex-direction: column; gap: 0; margin-top: 3rem; }
+  .step { display: flex; gap: 1.5rem; align-items: flex-start; position: relative; }
+  .step:not(:last-child)::after { content: ''; position: absolute; right: 19px; top: 44px; width: 2px; height: calc(100% + 0px); background: var(--border); }
+  .step-num { width: 40px; height: 40px; border-radius: 50%; background: var(--red); color: white; font-family: 'Noto Kufi Arabic', sans-serif; font-weight: 900; font-size: 1rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; z-index: 1; }
+  .step-content { padding-bottom: 2.5rem; }
+  .step-title { font-family: 'Noto Kufi Arabic', sans-serif; font-weight: 700; font-size: 1.05rem; margin-bottom: 0.4rem; color: var(--ink); }
+  .step-desc { font-size: 0.88rem; color: var(--ink-muted); line-height: 1.7; }
+  .features-section { padding: 5rem 1.5rem; background: var(--ink); }
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; max-width: 900px; margin: 3rem auto 0; }
+  .feature-card { background: #161616; border: 1px solid #222; border-radius: 16px; padding: 1.5rem; transition: border-color 0.2s; }
+  .feature-card:hover { border-color: var(--red); }
+  .feature-icon { width: 44px; height: 44px; background: #1e1e1e; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 1rem; }
+  .feature-title { font-family: 'Noto Kufi Arabic', sans-serif; font-weight: 700; font-size: 1rem; color: white; margin-bottom: 0.4rem; }
+  .feature-desc { font-size: 0.83rem; color: #666; line-height: 1.7; }
+  .alert-strip { background: var(--red); padding: 1rem 1.5rem; text-align: center; font-size: 0.85rem; font-weight: 600; color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+  .cta-section { padding: 5rem 1.5rem; background: var(--white); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+  .cta-section p { max-width: 480px; color: var(--ink-muted); line-height: 1.8; font-size: 0.95rem; }
+  footer { background: var(--ink); padding: 2rem 1.5rem; text-align: center; font-size: 0.78rem; color: #444; }
+  footer a { color: var(--red); text-decoration: none; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @media (min-width: 768px) {
+    .preview-section { flex-direction: row; align-items: flex-start; justify-content: center; gap: 4rem; padding: 6rem 3rem; }
+    .preview-text { text-align: right; max-width: 360px; }
+    .how-section { padding: 6rem 3rem; }
+  }
+</style>
+</head>
+<body>
+<div class="alert-strip">⚡ مشروع تجريبي — قيد التطوير | Qassim Health Cluster · PEM Department</div>
+<section class="hero">
+  <nav>
+    <div class="logo">
+      <div class="logo-cross"></div>
+      <div>
+        <div class="logo-text">بطاقة الطوارئ الطبية</div>
+        <div class="logo-domain">emcard.health</div>
+      </div>
+    </div>
+    <span class="nav-badge">مشروع جديد</span>
+  </nav>
+  <div class="hero-content">
+    <div class="hero-tag">🏥 <span>Qassim Health Cluster</span> — طوارئ الأطفال</div>
+    <h1 class="hero-title">معلوماتك الطبية<br><em>بمسح واحد</em></h1>
+    <p class="hero-sub">بطاقة رقمية ذكية تحمل معلوماتك الطبية الحرجة — أدويتك، حساسيتك، وتشخيصك — يقرأها الطاقم الطبي فوراً في أي طارئ</p>
+    <div class="hero-cta">
+      <a href="#how" class="btn-primary">🚀 كيف تعمل؟</a>
+      <a href="#card" class="btn-secondary">👁 شاهد البطاقة</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">٣ ث</div><div class="stat-label">وقت الوصول للمعلومات</div></div>
+    <div class="stat"><div class="stat-num">٢ل</div><div class="stat-label">عربي وإنجليزي</div></div>
+    <div class="stat"><div class="stat-num">٢٤/٧</div><div class="stat-label">متاح دائماً</div></div>
+    <div class="stat"><div class="stat-num">QR</div><div class="stat-label">بدون تطبيق</div></div>
+  </div>
+</section>
+<section class="preview-section" id="card">
+  <div class="preview-text">
+    <div class="section-label">البطاقة الرقمية</div>
+    <h2 class="section-title">بطاقة طبية<br>تنقذ الأرواح</h2>
+    <p style="margin-top:1rem; color:var(--ink-muted); line-height:1.8; font-size:0.9rem;">تُطبع أو تُحفظ على الجوال. تحمل QR Code مشفر يفتح ملفك الطبي الكامل فوراً دون الحاجة لتطبيق أو اتصال بالإنترنت.</p>
+    <div style="margin-top:1.5rem; display:flex; flex-direction:column; gap:0.6rem;">
+      <div style="display:flex; align-items:center; gap:0.6rem; font-size:0.85rem; color:var(--ink-muted);"><span style="color:var(--green);">✓</span> تعمل بدون إنترنت</div>
+      <div style="display:flex; align-items:center; gap:0.6rem; font-size:0.85rem; color:var(--ink-muted);"><span style="color:var(--green);">✓</span> لا تحتاج تطبيق خاص</div>
+      <div style="display:flex; align-items:center; gap:0.6rem; font-size:0.85rem; color:var(--ink-muted);"><span style="color:var(--green);">✓</span> عربي وإنجليزي</div>
+      <div style="display:flex; align-items:center; gap:0.6rem; font-size:0.85rem; color:var(--ink-muted);"><span style="color:var(--green);">✓</span> قابلة للطباعة والمشاركة</div>
+    </div>
+  </div>
+  <div class="emc-card">
+    <div class="card-header">
+      <div>
+        <div class="card-header-title">بطاقة الطوارئ الطبية</div>
+        <div class="card-header-sub">Emergency Medical Card · emcard.health</div>
+      </div>
+      <div class="card-cross"></div>
+    </div>
+    <div class="card-body">
+      <div class="card-patient">
+        <div class="card-avatar">👦</div>
+        <div>
+          <div class="card-name">محمد عبدالله الأحمد</div>
+          <div class="card-meta">عمر: ٤ سنوات · ذكر · فصيلة: A+</div>
+        </div>
+      </div>
+      <div class="card-fields">
+        <div class="card-field"><div class="field-icon red">⚠️</div><div><div class="field-label">الحساسية</div><div class="field-value">بنسلين — بيض — مكسرات</div></div></div>
+        <div class="card-field"><div class="field-icon blue">💊</div><div><div class="field-label">الأدوية الدائمة</div><div class="field-value">مونتيلوكاست ٤مج · سالبوتامول</div></div></div>
+        <div class="card-field"><div class="field-icon orange">🫁</div><div><div class="field-label">التشخيص</div><div class="field-value">ربو — متوسط الشدة</div></div></div>
+        <div class="card-field"><div class="field-icon green">📞</div><div><div class="field-label">ولي الأمر</div><div class="field-value">عبدالله: 05XXXXXXXX</div></div></div>
+      </div>
+    </div>
+    <div class="card-qr-strip">
+      <div class="qr-placeholder">
+        <div class="qr-dot"></div><div class="qr-dot dark"></div><div class="qr-dot"></div><div class="qr-dot dark"></div><div class="qr-dot"></div>
+        <div class="qr-dot dark"></div><div class="qr-dot"></div><div class="qr-dot dark"></div><div class="qr-dot"></div><div class="qr-dot dark"></div>
+        <div class="qr-dot"></div><div class="qr-dot dark"></div><div class="qr-dot"></div><div class="qr-dot dark"></div><div class="qr-dot"></div>
+        <div class="qr-dot dark"></div><div class="qr-dot"></div><div class="qr-dot dark"></div><div class="qr-dot"></div><div class="qr-dot dark"></div>
+        <div class="qr-dot"></div><div class="qr-dot dark"></div><div class="qr-dot"></div><div class="qr-dot dark"></div><div class="qr-dot"></div>
+      </div>
+      <div class="qr-text">امسح للوصول الفوري للملف الطبي<strong>emcard.health/p/م-٢٤٠١</strong></div>
+    </div>
+  </div>
+</section>
+<section class="how-section" id="how">
+  <div style="text-align:center"><div class="section-label">كيف تعمل</div><h2 class="section-title">٣ خطوات فقط</h2></div>
+  <div class="steps">
+    <div class="step"><div class="step-num">١</div><div class="step-content"><div class="step-title">أدخل بيانات المريض</div><div class="step-desc">تملأ الحساسية، الأدوية، التشخيص، وأرقام التواصل في نموذج بسيط. يدعم العربية والإنجليزية.</div></div></div>
+    <div class="step"><div class="step-num">٢</div><div class="step-content"><div class="step-title">استلم البطاقة + QR Code</div><div class="step-desc">يُولَّد QR Code فريد مرتبط بالملف الطبي. تقدر تطبعه، تحفظه على الجوال، أو تلصقه على بطاقة هوية.</div></div></div>
+    <div class="step"><div class="step-num">٣</div><div class="step-content"><div class="step-title">الطاقم يمسح في الطارئ</div><div class="step-desc">يمسح أي طبيب أو ممرض الـ QR بكاميرا الجوال ويحصل على كل المعلومات فوراً — بدون تطبيق ولا كلمة سر.</div></div></div>
+  </div>
+</section>
+<section class="features-section">
+  <div style="text-align:center; max-width:900px; margin:0 auto;"><div class="section-label" style="color:var(--red);">المميزات</div><h2 class="section-title" style="color:white;">مصمم للطوارئ الحقيقية</h2></div>
+  <div class="features-grid">
+    <div class="feature-card"><div class="feature-icon">⚡</div><div class="feature-title">وصول فوري</div><div class="feature-desc">لا تسجيل دخول، لا كلمة سر — مسح واحد يفتح كل المعلومات في ٣ ثوان</div></div>
+    <div class="feature-card"><div class="feature-icon">🌐</div><div class="feature-title">ثنائي اللغة</div><div class="feature-desc">المعلومات تظهر بالعربية والإنجليزية تلقائياً لخدمة الطاقم الطبي المتنوع</div></div>
+    <div class="feature-card"><div class="feature-icon">🔒</div><div class="feature-title">خصوصية محمية</div><div class="feature-desc">تتحكم في مستوى المعلومات المرئية — ما يُعرض في الطارئ فقط دون بيانات حساسة</div></div>
+    <div class="feature-card"><div class="feature-icon">👶</div><div class="feature-title">مخصص للأطفال</div><div class="feature-desc">مبني من تجربة طوارئ الأطفال — يشمل الوزن، والجرعات، وبيانات ولي الأمر</div></div>
+    <div class="feature-card"><div class="feature-icon">🖨️</div><div class="feature-title">قابل للطباعة</div><div class="feature-desc">تُطبع بحجم بطاقة الهوية وتُلصق في ملف المريض أو تُعطى لأهله</div></div>
+    <div class="feature-card"><div class="feature-icon">🏥</div><div class="feature-title">للحالات المزمنة</div><div class="feature-desc">مثالي لمرضى الأمراض النادرة، السكري، الربو، والحساسية الشديدة</div></div>
+  </div>
+</section>
+<section class="cta-section">
+  <div class="section-label">ابدأ الآن</div>
+  <h2 class="section-title">جهّز بطاقة مريضك اليوم</h2>
+  <p>هذا المشروع قيد التطوير ضمن مبادرة طوارئ الأطفال في مجموعة القصيم الصحية. سيُطلق قريباً.</p>
+  <a href="mailto:fahad.radhi.alharbi@gmail.com" class="btn-primary">📧 تواصل مع الفريق</a>
+</section>
+<footer>
+  <p><strong style="color:#888;">emcard.health</strong> — مشروع تطوير سريري | <a href="#">طوارئ الأطفال · مجموعة القصيم الصحية</a></p>
+  <p style="margin-top:0.5rem;">© ٢٠٢٦ · جميع الحقوق محفوظة</p>
+</footer>
+</body>
+</html>
